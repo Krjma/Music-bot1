@@ -1,0 +1,178 @@
+<% function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+} %>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة تحكم البوت</title>
+  <style>
+    body {
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #232526 0%, #1DB954 100%);
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .container {
+      margin: 50px auto;
+      max-width: 420px;
+      background: rgba(30,30,30,0.97);
+      box-shadow: 0 8px 32px 0 rgba(30, 185, 84, 0.25);
+      padding: 36px 28px 28px 28px;
+      border-radius: 18px;
+      border: 1.5px solid #1DB95444;
+      position: relative;
+    }
+    h2 {
+      font-size: 2.1em;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+      color: #1DB954;
+      text-shadow: 0 2px 8px #1db95433;
+    }
+    button {
+      padding: 12px 22px;
+      margin: 10px 6px 0 6px;
+      border: none;
+      border-radius: 7px;
+      background: linear-gradient(90deg, #1DB954 60%, #14833b 100%);
+      color: #fff;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #1db95433;
+      transition: background 0.2s, transform 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #14833b 60%, #1DB954 100%);
+      transform: scale(1.06);
+    }
+    .song {
+      margin-bottom: 22px;
+      background: rgba(40,40,40,0.7);
+      border-radius: 12px;
+      padding: 18px 10px 10px 10px;
+      box-shadow: 0 2px 8px #1db95422;
+    }
+    .song img {
+      margin: 12px 0 8px 0;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #1db95433;
+      max-width: 90%;
+      height: auto;
+      border: 2px solid #1DB95444;
+    }
+    .progress-bar {
+      width: 100%;
+      background: #222;
+      border-radius: 7px;
+      height: 22px;
+      margin: 16px 0 10px 0;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #1db95422;
+      overflow: hidden;
+    }
+    .progress {
+      background: linear-gradient(90deg, #1DB954 60%, #14833b 100%);
+      height: 100%;
+      border-radius: 7px;
+      transition: width 0.3s;
+    }
+    .progress-time {
+      position: absolute;
+      top: 0; left: 12px; font-size: 13px; color: #fff; line-height: 22px;
+      text-shadow: 0 1px 4px #000a;
+    }
+    .progress-total {
+      position: absolute;
+      top: 0; right: 12px; font-size: 13px; color: #fff; line-height: 22px;
+      text-shadow: 0 1px 4px #000a;
+    }
+    .controls {
+      margin-top: 24px;
+      margin-bottom: 0;
+    }
+    .controls form { display: inline; }
+    @media (max-width: 600px) {
+      .container { max-width: 98vw; padding: 10vw 2vw; }
+      .song img { max-width: 100%; }
+      button { font-size: 15px; padding: 10px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>لوحة تحكم البوت</h2>
+    <div id="main-content">
+      <!-- سيتم ملء البيانات بالجافاسكريبت -->
+    </div>
+  </div>
+  <script>
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+    let lastSongUrl = null;
+    function render(data) {
+      const { song, volume } = data;
+      const main = document.getElementById('main-content');
+      if (!song) {
+        main.innerHTML = '<div>لا توجد أغنية تعمل حالياً.</div>';
+        return;
+      }
+      lastSongUrl = song.url;
+      main.innerHTML = `
+        <div class="song">
+          <b>الأغنية الحالية:</b><br>
+          <a href="${song.url}" target="_blank" style="color:#1DB954">${song.name}</a><br>
+          ${song.thumbnail ? `<img src="${song.thumbnail}" alt="صورة الأغنية" style="width: 100%; max-width: 250px; border-radius: 10px; margin: 10px 0;">` : ''}
+          <small>الصوت: ${volume}%</small>
+        </div>
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress" style="width:${song.progressPercent}%"></div>
+          <span class="progress-time">${formatTime(song.currentTime)}</span>
+          <span class="progress-total">${formatTime(song.duration)}</span>
+        </div>
+        <div class="controls">
+          <form method="post" action="/pause"><button>⏸️ إيقاف مؤقت</button></form>
+          <form method="post" action="/resume"><button>▶️ استئناف</button></form>
+          <form method="post" action="/skip"><button>⏭️ تخطي</button></form>
+          <form method="post" action="/stop"><button>⏹️ إيقاف</button></form>
+          <form method="post" action="/volume/up"><button>🔊 رفع الصوت</button></form>
+          <form method="post" action="/volume/down"><button>🔉 خفض الصوت</button></form>
+        </div>
+      `;
+      // إضافة حدث التقديم/الإرجاع
+      const bar = document.getElementById('progress-bar');
+      if (bar && song.duration > 0) {
+        bar.onclick = function(e) {
+          const rect = bar.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const percent = x / rect.width;
+          const seekSec = Math.floor(song.duration * percent);
+          fetch('/seek', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'seconds=' + seekSec
+          });
+        };
+      }
+    }
+    async function update() {
+      const res = await fetch('/api/song');
+      const data = await res.json();
+      render(data);
+    }
+    setInterval(update, 1000);
+    update();
+  </script>
+</body>
+</html>
