@@ -151,8 +151,8 @@ client.on('messageCreate', async (message) => {
       } else if (err.name === 'DisTubeError' && err.errorCode === 'SOUNDCLOUD_PLUGIN_RATE_LIMITED') {
         message.reply('تم تجاوز الحد المسموح من SoundCloud. جرب استخدام رابط يوتيوب أو سبوتيفاي.');
       } else {
-        message.reply('حدث خطأ أثناء محاولة تشغيل الأغنية.');
-        console.error(err);
+  message.reply(`حدث خطأ أثناء محاولة تشغيل الأغنية.\n\n\`\`\`${err?.message || err}\n${err?.stack || ''}\`\`\``);
+  console.error(err);
       }
     }
   }
