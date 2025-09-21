@@ -1,20 +1,3 @@
-if (process.platform !== 'win32') {
-  const fs = require('fs');
-  try {
-    if (!fs.existsSync('/usr/bin/ffmpeg')) {
-      fs.symlinkSync(ffmpegPath, '/usr/bin/ffmpeg');
-    }
-  } catch (e) {
-    // تجاهل الخطأ إذا لم يكن لدينا صلاحية
-  }
-}
-// اجعل DisTube يستخدم ffmpeg-static تلقائياً (حل مشكلة Railway)
-process.env.FFMPEG_PATH = require('ffmpeg-static');
-const path = require('path');
-const ffmpegStatic = require('ffmpeg-static');
-const ffmpegPath = ffmpegStatic.path || ffmpegStatic;
-const ffmpegDir = path.dirname(ffmpegPath);
-process.env.PATH = ffmpegDir + (process.platform === 'win32' ? ';' : ':') + process.env.PATH;
 // منع توقف البوت مع أي خطأ غير متوقع
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
