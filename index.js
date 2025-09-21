@@ -102,8 +102,7 @@ const distube = new DisTube(client, {
     new SpotifyPlugin(),
     new SoundCloudPlugin()
   ],
-  ffmpeg: process.env.FFMPEG_PATH,
-  ffmpegPath: process.env.FFMPEG_PATH
+  ffmpeg: process.env.FFMPEG_PATH
 });
 
 client.once('ready', () => {
