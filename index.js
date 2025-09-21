@@ -1,3 +1,5 @@
+// اجعل DisTube يستخدم ffmpeg-static تلقائياً (حل مشكلة Railway)
+process.env.FFMPEG_PATH = require('ffmpeg-static');
 // منع توقف البوت مع أي خطأ غير متوقع
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
