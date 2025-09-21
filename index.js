@@ -1,3 +1,13 @@
+if (process.platform !== 'win32') {
+  const fs = require('fs');
+  try {
+    if (!fs.existsSync('/usr/bin/ffmpeg')) {
+      fs.symlinkSync(ffmpegPath, '/usr/bin/ffmpeg');
+    }
+  } catch (e) {
+    // تجاهل الخطأ إذا لم يكن لدينا صلاحية
+  }
+}
 // اجعل DisTube يستخدم ffmpeg-static تلقائياً (حل مشكلة Railway)
 process.env.FFMPEG_PATH = require('ffmpeg-static');
 const ffmpegStatic = require('ffmpeg-static');
