@@ -10,9 +10,11 @@ if (process.platform !== 'win32') {
 }
 // اجعل DisTube يستخدم ffmpeg-static تلقائياً (حل مشكلة Railway)
 process.env.FFMPEG_PATH = require('ffmpeg-static');
+const path = require('path');
 const ffmpegStatic = require('ffmpeg-static');
 const ffmpegPath = ffmpegStatic.path || ffmpegStatic;
-process.env.PATH = ffmpegPath + (process.platform === 'win32' ? ';' : ':') + process.env.PATH;
+const ffmpegDir = path.dirname(ffmpegPath);
+process.env.PATH = ffmpegDir + (process.platform === 'win32' ? ';' : ':') + process.env.PATH;
 // منع توقف البوت مع أي خطأ غير متوقع
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
